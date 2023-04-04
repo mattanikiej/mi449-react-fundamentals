@@ -1,4 +1,7 @@
+import { supabase } from './supabaseClient';
+
 import './App.css';
+import { useState } from 'react';
 
 const magazines = [
   {id: 1, title: 'Architectural Digest', theme: 'architecture', isAvailable: true},
@@ -53,11 +56,45 @@ function Bookshelf() {
 }
 
 function MagicButton() {
+  const [count, setCount] = useState(0);
+
+  function doMagic() {
+    setCount(count +  1);
+  }
+
   return (
       <>
           <h3>This is a magic button</h3>
-          <button>Magic</button>
+          <button onClick={doMagic}>Magic {count}</button>
       </>
+  );
+}
+
+function Library() {
+  const [myBooks, setMyBooks] = useState([]);
+
+  async function getBooks() {
+    let { data: books, error } = await supabase
+      .from('books')
+      .select('*')
+
+    setMyBooks(books);
+  }
+  
+  getBooks();
+
+  return (
+    <table>
+      {
+        myBooks.map(b => (
+          <tr>
+            <td>{b.title}</td>
+            <td>{b.author}</td>
+            <td>{b.isbn}</td>
+          </tr>
+        ))
+      }
+    </table>
   );
 }
 
@@ -68,6 +105,7 @@ function App() {
         <ZineRack />
         <Bookshelf />
         <MagicButton />
+        <Library />
       </header>
       
     </div>
